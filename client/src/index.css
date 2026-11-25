@@ -1,0 +1,190 @@
+:root {
+  --cw-navy: #0F1D35;
+  --cw-navy-light: #172B4D;
+  --cw-blue: #1B4F8F;
+  --cw-blue-hover: #143D70;
+  --cw-teal: #0E9488;
+  --cw-teal-light: #E6F7F5;
+  --cw-bg: #F4F7FB;
+  --cw-surface: #FFFFFF;
+  --cw-border: #E2E8F0;
+  --cw-text: #1E293B;
+  --cw-muted: #64748B;
+}
+
+body {
+  background-color: var(--cw-bg);
+  color: var(--cw-text);
+  font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  min-height: 100vh;
+}
+
+.cw-navbar {
+  background: linear-gradient(90deg, var(--cw-navy) 0%, var(--cw-navy-light) 100%);
+  box-shadow: 0 2px 12px rgba(15, 29, 53, 0.16);
+}
+
+.cw-brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--cw-teal), var(--cw-blue));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.15rem;
+}
+
+.cw-hero {
+  background: linear-gradient(135deg, var(--cw-navy) 0%, var(--cw-blue) 70%, var(--cw-teal) 100%);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 10px 30px rgba(15, 29, 53, 0.15);
+}
+
+.cw-card {
+  background: var(--cw-surface);
+  border: 1px solid var(--cw-border);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(15, 29, 53, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cw-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(15, 29, 53, 0.08);
+}
+
+.btn-cw-primary {
+  background-color: var(--cw-blue);
+  border-color: var(--cw-blue);
+  color: #ffffff;
+}
+
+.btn-cw-primary:hover,
+.btn-cw-primary:focus {
+  background-color: var(--cw-blue-hover);
+  border-color: var(--cw-blue-hover);
+  color: #ffffff;
+}
+
+.btn-cw-teal {
+  background-color: var(--cw-teal);
+  border-color: var(--cw-teal);
+  color: #ffffff;
+}
+
+.btn-cw-teal:hover,
+.btn-cw-teal:focus {
+  background-color: #0B7A70;
+  border-color: #0B7A70;
+  color: #ffffff;
+}
+
+.cw-kpi-card {
+  border-left: 4px solid var(--cw-blue);
+}
+
+.cw-kpi-card.teal {
+  border-left-color: var(--cw-teal);
+}
+
+.cw-kpi-card.navy {
+  border-left-color: var(--cw-navy);
+}
+
+.cw-kpi-card.warning {
+  border-left-color: #D97706;
+}
+
+.cw-slot-btn {
+  min-width: 118px;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: all 0.15s ease;
+}
+
+.cw-slot-available {
+  background-color: var(--cw-teal-light);
+  border: 1.5px solid var(--cw-teal);
+  color: #0A685F;
+}
+
+.cw-slot-available:hover {
+  background-color: var(--cw-teal);
+  color: #ffffff;
+}
+
+.cw-slot-selected {
+  background-color: var(--cw-blue) !important;
+  border: 1.5px solid var(--cw-blue) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(27, 79, 143, 0.3);
+}
+
+.cw-slot-booked {
+  background-color: #F1F5F9;
+  border: 1px dashed #CBD5E1;
+  color: #94A3B8;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.cw-toast-container {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 1090;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 380px;
+}
+
+.cw-section-title {
+  color: var(--cw-navy);
+  font-weight: 700;
+}
+
+.cw-print-sheet {
+  background: #ffffff;
+  border: 1px solid #CBD5E1;
+  border-radius: 12px;
+  padding: 1.75rem;
+}
+
+.cw-print-header {
+  border-bottom: 2px solid var(--cw-navy);
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Dedicated A4 print / PDF layout for Medical Records & Prescriptions */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  .cw-printable-area,
+  .cw-printable-area * {
+    visibility: visible !important;
+  }
+
+  .cw-printable-area {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    padding: 1.5cm !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 9999 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}

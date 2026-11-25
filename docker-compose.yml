@@ -1,0 +1,23 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: clinicaweb-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-clinica_root_pass}
+      MYSQL_DATABASE: ${DB_NAME:-clinicaweb}
+      TZ: Europe/Bucharest
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - clinicaweb_mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-clinica_root_pass}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  clinicaweb_mysql_data:
