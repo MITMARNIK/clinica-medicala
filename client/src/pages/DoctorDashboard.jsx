@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { apiRequest } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -257,14 +258,25 @@ export default function DoctorDashboard() {
                           )}
 
                           {rec && (
-                            <button
-                              type="button"
-                              className="btn btn-outline-success"
-                              title="Tipărește / Salvează PDF"
-                              onClick={() => setPrintRecord(rec)}
-                            >
-                              <i className="bi bi-printer" />
-                            </button>
+                            <>
+                              <Link
+                                to={`/fisa-medicala/${rec.id}`}
+                                state={{ record: rec }}
+                                className="btn btn-outline-primary"
+                                title="Deschide pagina detaliată (View)"
+                              >
+                                <i className="bi bi-eye me-1" />
+                                View
+                              </Link>
+                              <button
+                                type="button"
+                                className="btn btn-outline-success"
+                                title="Tipărește / Salvează PDF"
+                                onClick={() => setPrintRecord(rec)}
+                              >
+                                <i className="bi bi-printer" />
+                              </button>
+                            </>
                           )}
                         </div>
                       </td>
@@ -459,14 +471,24 @@ export default function DoctorDashboard() {
                       <div className="small mb-2">
                         <strong>Recomandări:</strong> {rec.recommendations}
                       </div>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => setPrintRecord(rec)}
-                      >
-                        <i className="bi bi-printer me-1" />
-                        Deschide pentru Tipărire / PDF
-                      </button>
+                      <div className="d-flex flex-wrap gap-2">
+                        <Link
+                          to={`/fisa-medicala/${rec.id}`}
+                          state={{ record: rec }}
+                          className="btn btn-sm btn-cw-primary"
+                        >
+                          <i className="bi bi-eye me-1" />
+                          View
+                        </Link>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() => setPrintRecord(rec)}
+                        >
+                          <i className="bi bi-printer me-1" />
+                          Deschide pentru Tipărire / PDF
+                        </button>
+                      </div>
                     </div>
                   ))
                 )}

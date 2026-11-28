@@ -174,17 +174,30 @@ export default function PatientDashboard() {
                           </button>
                         )}
                         {a.medical_record_id && (
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-primary ms-1"
-                            onClick={() => {
-                              const rec = records.find((r) => r.id === a.medical_record_id);
-                              if (rec) setSelectedRecord(rec);
-                            }}
-                          >
-                            <i className="bi bi-file-medical me-1" />
-                            Vezi Fișa
-                          </button>
+                          <div className="btn-group btn-group-sm ms-1">
+                            <Link
+                              to={`/fisa-medicala/${a.medical_record_id}`}
+                              state={{
+                                record: records.find((r) => r.id === a.medical_record_id)
+                              }}
+                              className="btn btn-outline-primary"
+                              title="Deschide pagina detaliată"
+                            >
+                              <i className="bi bi-eye me-1" />
+                              View
+                            </Link>
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              onClick={() => {
+                                const rec = records.find((r) => r.id === a.medical_record_id);
+                                if (rec) setSelectedRecord(rec);
+                              }}
+                            >
+                              <i className="bi bi-file-medical me-1" />
+                              Vezi Fișa
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
@@ -229,14 +242,24 @@ export default function PatientDashboard() {
                       <i className="bi bi-capsule me-1" />
                       {rec.prescriptions?.length || 0} medicamente pe rețetă
                     </span>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-cw-primary"
-                      onClick={() => setSelectedRecord(rec)}
-                    >
-                      <i className="bi bi-printer me-1" />
-                      Vezi & Tipărește PDF
-                    </button>
+                    <div className="d-flex gap-2">
+                      <Link
+                        to={`/fisa-medicala/${rec.id}`}
+                        state={{ record: rec }}
+                        className="btn btn-sm btn-outline-primary"
+                      >
+                        <i className="bi bi-eye me-1" />
+                        View
+                      </Link>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-cw-primary"
+                        onClick={() => setSelectedRecord(rec)}
+                      >
+                        <i className="bi bi-printer me-1" />
+                        Vezi & Tipărește PDF
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

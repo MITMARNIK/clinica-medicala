@@ -12,6 +12,7 @@ import ReceptionDashboard from './pages/ReceptionDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ProfilePage from './pages/ProfilePage';
+import MedicalRecordViewPage from './pages/MedicalRecordViewPage';
 
 export default function App() {
   return (
@@ -65,6 +66,15 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/fisa-medicala/:id"
+            element={
+              <ProtectedRoute allowedRoles={['PATIENT', 'DOCTOR']}>
+                <MedicalRecordViewPage />
               </ProtectedRoute>
             }
           />

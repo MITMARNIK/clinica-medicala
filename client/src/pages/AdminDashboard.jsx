@@ -1,6 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { apiRequest, downloadCsv } from '../services/api';
 import { useToast } from '../context/ToastContext';
+import {
+  exportReportExcel,
+  exportReportPdf,
+  exportReportWord
+} from '../utils/reportExport';
 
 const DAYS = [
   { id: 1, label: 'Luni' },
@@ -82,6 +87,36 @@ export default function AdminDashboard() {
       showToast('Raportul CSV a fost descărcat.', 'success');
     } catch (err) {
       showToast(err.message, 'danger');
+    }
+  };
+
+  const handleExportExcel = () => {
+    if (!reports) return;
+    try {
+      exportReportExcel(reports, { fromDate, toDate });
+      showToast('Raportul Excel (.xlsx) a fost descărcat.', 'success');
+    } catch (err) {
+      showToast(err.message || 'Eroare la generarea fișierului Excel.', 'danger');
+    }
+  };
+
+  const handleExportWord = async () => {
+    if (!reports) return;
+    try {
+      await exportReportWord(reports, { fromDate, toDate });
+      showToast('Raportul Word (.docx) a fost descărcat.', 'success');
+    } catch (err) {
+      showToast(err.message || 'Eroare la generarea fișierului Word.', 'danger');
+    }
+  };
+
+  const handleExportPdf = () => {
+    if (!reports) return;
+    try {
+      exportReportPdf(reports, { fromDate, toDate });
+      showToast('Raportul PDF a fost descărcat.', 'success');
+    } catch (err) {
+      showToast(err.message || 'Eroare la generarea fișierului PDF.', 'danger');
     }
   };
 
@@ -220,10 +255,44 @@ export default function AdminDashboard() {
             Indicatori KPI în timp real, gestiune medici, recepționeri, specializări și orare
           </p>
         </div>
-        <button type="button" className="btn btn-cw-teal fw-semibold" onClick={handleExportCsv}>
-          <i className="bi bi-file-earmark-spreadsheet me-2" />
-          Export Raport CSV
-        </button>
+        <div className="d-flex flex-wrap gap-2">
+          <button
+            type="button"
+            className="btn btn-cw-teal fw-semibold"
+            onClick={handleExportCsv}
+            disabled={!reports}
+          >
+            <i className="bi bi-filetype-csv me-1" />
+            CSV
+          </button>
+          <button
+            type="button"
+            className="btn btn-success fw-semibold"
+            onClick={handleExportExcel}
+            disabled={!reports}
+          >
+            <i className="bi bi-file-earmark-excel me-1" />
+            Excel
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary fw-semibold"
+            onClick={handleExportWord}
+            disabled={!reports}
+          >
+            <i className="bi bi-file-earmark-word me-1" />
+            Word
+          </button>
+          <button
+            type="button"
+            className="btn btn-danger fw-semibold"
+            onClick={handleExportPdf}
+            disabled={!reports}
+          >
+            <i className="bi bi-file-earmark-pdf me-1" />
+            PDF
+          </button>
+        </div>
       </div>
 
       {/* KPI Cards */}
