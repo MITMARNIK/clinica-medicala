@@ -15,6 +15,9 @@ export default function PatientDashboard() {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [apptSearch, setApptSearch] = useState('');
+  const [apptStatusFilter, setApptStatusFilter] = useState('ALL');
+  const [recordSearch, setRecordSearch] = useState('');
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -53,6 +56,30 @@ export default function PatientDashboard() {
   const activeCount = appointments.filter(
     (a) => a.status === 'PENDING' || a.status === 'CONFIRMED'
   ).length;
+
+  const filteredAppointments = appointments.filter((a) => {
+    const matchesStatus = apptStatusFilter === 'ALL' || a.status === apptStatusFilter;
+    const q = apptSearch.trim().toLowerCase();
+    const matchesQuery =
+      !q ||
+      (a.doctor_name || '').toLowerCase().includes(q) ||
+      (a.specialization_name || '').toLowerCase().includes(q) ||
+      (a.appointment_date || '').includes(q);
+    return matchesStatus && matchesQuery;
+  });
+
+  const filteredRecords = records.filter((rec) => {
+    const q = recordSearch.trim().toLowerCase();
+    if (!q) return true;
+    const meds = (rec.prescriptions || []).map((p) => p.medication_name).join(' ').toLowerCase();
+    return (
+      (rec.diagnosis || '').toLowerCase().includes(q) ||
+      (rec.doctor_name || '').toLowerCase().includes(q) ||
+      (rec.specialization_name || '').toLowerCase().includes(q) ||
+      (rec.symptoms || '').toLowerCase().includes(q) ||
+      meds.includes(q)
+    );
+  });
 
   return (
     <div className="container">
@@ -121,10 +148,46 @@ export default function PatientDashboard() {
         </div>
       ) : activeTab === 'appointments' ? (
         <div className="cw-card p-3 p-md-4">
+          {appointments.length > 0 && (
+            <div className="row g-2 mb-3">
+              <div className="col-md-7">
+                <div className="input-group input-group-sm">
+                  <span className="input-group-text bg-white">
+                    <i className="bi bi-search text-muted" />
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Caută după medic, specializare sau dată..."
+                    value={apptSearch}
+                    onChange={(e) => setApptSearch(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="col-md-5">
+                <select
+                  className="form-select form-select-sm"
+                  value={apptStatusFilter}
+                  onChange={(e) => setApptStatusFilter(e.target.value)}
+                >
+                  <option value="ALL">Toate statusurile</option>
+                  <option value="PENDING">În așteptare</option>
+                  <option value="CONFIRMED">Confirmate</option>
+                  <option value="COMPLETED">Finalizate</option>
+                  <option value="CANCELLED">Anulate</option>
+                </select>
+              </div>
+            </div>
+          )}
+
           {appointments.length === 0 ? (
             <div className="text-center py-4 text-muted">
               Nu aveți încă programări.{' '}
               <Link to="/programare-noua">Faceți prima programare online</Link>.
+            </div>
+          ) : filteredAppointments.length === 0 ? (
+            <div className="text-center py-4 text-muted">
+              Nicio programare nu corespunde filtrelor selectate.
             </div>
           ) : (
             <div className="table-responsive">
@@ -140,7 +203,7 @@ export default function PatientDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {appointments.map((a) => (
+                  {filteredAppointments.map((a) => (
                     <tr key={a.id}>
                       <td>
                         <div className="fw-semibold">{a.appointment_date}</div>
@@ -209,14 +272,48 @@ export default function PatientDashboard() {
         </div>
       ) : (
         <div className="row g-3">
+          {records.length > 0 && (
+            <div className="col-12">
+              <div className="cw-card p-3">
+                <div className="input-group input-group-sm">
+                  <span className="input-group-text bg-white">
+                    <i className="bi bi-search text-muted" />
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Caută în istoricul medical după diagnostic, medic, specializare sau medicament..."
+                    value={recordSearch}
+                    onChange={(e) => setRecordSearch(e.target.value)}
+                  />
+                  {recordSearch && (
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary"
+                      onClick={() => setRecordSearch('')}
+                    >
+                      Resetează
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {records.length === 0 ? (
             <div className="col-12">
               <div className="cw-card p-5 text-center text-muted">
                 Nu există încă fișe medicale emise pe contul dumneavoastră.
               </div>
             </div>
+          ) : filteredRecords.length === 0 ? (
+            <div className="col-12">
+              <div className="cw-card p-5 text-center text-muted">
+                Nicio fișă medicală nu corespunde căutării „{recordSearch}”.
+              </div>
+            </div>
           ) : (
-            records.map((rec) => (
+            filteredRecords.map((rec) => (
               <div key={rec.id} className="col-md-6">
                 <div className="cw-card p-4 h-100 d-flex flex-column">
                   <div className="d-flex justify-content-between align-items-start mb-2">

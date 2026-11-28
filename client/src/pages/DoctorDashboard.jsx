@@ -15,6 +15,8 @@ export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [myRecords, setMyRecords] = useState([]);
   const [filterDate, setFilterDate] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
   const [loading, setLoading] = useState(true);
 
   // EHR Form modal
@@ -157,6 +159,23 @@ export default function DoctorDashboard() {
     }));
   };
 
+  const filteredAppointments = appointments.filter((a) => {
+    const matchesStatus = statusFilter === 'ALL' || a.status === statusFilter;
+    const q = searchQuery.trim().toLowerCase();
+    const matchesQuery =
+      !q ||
+      (a.patient_name || '').toLowerCase().includes(q) ||
+      (a.patient_email || '').toLowerCase().includes(q) ||
+      (a.patient_phone || '').toLowerCase().includes(q) ||
+      (a.notes || '').toLowerCase().includes(q);
+    return matchesStatus && matchesQuery;
+  });
+
+  const activeConsultations = appointments.filter(
+    (a) => a.status === 'PENDING' || a.status === 'CONFIRMED'
+  ).length;
+  const completedConsultations = appointments.filter((a) => a.status === 'COMPLETED').length;
+
   return (
     <div className="container">
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -189,16 +208,68 @@ export default function DoctorDashboard() {
         </div>
       </div>
 
+      {/* Doctor KPI Summary */}
+      <div className="row g-3 mb-4">
+        <div className="col-sm-4">
+          <div className="cw-card cw-kpi-card p-3">
+            <div className="small text-muted">Consultații în calendar</div>
+            <div className="fs-3 fw-bold text-dark">{appointments.length}</div>
+          </div>
+        </div>
+        <div className="col-sm-4">
+          <div className="cw-card cw-kpi-card teal p-3">
+            <div className="small text-muted">În așteptare / Confirmate</div>
+            <div className="fs-3 fw-bold text-primary">{activeConsultations}</div>
+          </div>
+        </div>
+        <div className="col-sm-4">
+          <div className="cw-card cw-kpi-card navy p-3">
+            <div className="small text-muted">Finalizate / Fișe emise</div>
+            <div className="fs-3 fw-bold text-success">
+              {completedConsultations} / {myRecords.length}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Doctor's Appointments */}
       <div className="cw-card p-3 p-md-4 mb-4">
-        <h5 className="fw-bold mb-3">Calendar Consultații</h5>
+        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <h5 className="fw-bold mb-0">Calendar Consultații</h5>
+          <div className="d-flex flex-wrap gap-2">
+            <div className="input-group input-group-sm" style={{ width: 240 }}>
+              <span className="input-group-text bg-white">
+                <i className="bi bi-search text-muted" />
+              </span>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Caută pacient..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <select
+              className="form-select form-select-sm"
+              style={{ width: 170 }}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="ALL">Toate statusurile</option>
+              <option value="PENDING">În așteptare</option>
+              <option value="CONFIRMED">Confirmate</option>
+              <option value="COMPLETED">Finalizate</option>
+              <option value="CANCELLED">Anulate</option>
+            </select>
+          </div>
+        </div>
         {loading ? (
           <div className="text-center py-4">
             <div className="spinner-border text-primary" />
           </div>
-        ) : appointments.length === 0 ? (
+        ) : filteredAppointments.length === 0 ? (
           <div className="text-center py-4 text-muted">
-            Nu aveți programări pentru perioada selectată.
+            Nu aveți programări pentru filtrele selectate.
           </div>
         ) : (
           <div className="table-responsive">
@@ -214,7 +285,7 @@ export default function DoctorDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {appointments.map((a) => {
+                {filteredAppointments.map((a) => {
                   const rec = myRecords.find((r) => r.appointment_id === a.id);
                   return (
                     <tr key={a.id}>
